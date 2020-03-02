@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using OpenQA.Selenium;
 using SeleniumExtras.PageObjects;
+using BbcTestProject.Utils;
 
 namespace BbcTestProject.PageObjects
 {
@@ -21,6 +22,7 @@ namespace BbcTestProject.PageObjects
 
         public BbcSportAllScoresPage GoToAllScoresPage()
         {
+            Utils.Utils.WaitForJqueryAjax(driver);
             bool staleElement = true;
             while (staleElement)
             {
@@ -29,14 +31,21 @@ namespace BbcTestProject.PageObjects
                 {
                     FootballScoresMoreButton = driver.FindElement(By.XPath("//div[2]//div/button"));
                     staleElement = false;
+                    FootballScoresMoreButton.Click();
                 }
                 catch (StaleElementReferenceException)
                 {
                     staleElement = true;
                     continue;
                 }
+                catch (ElementNotInteractableException)
+                {
+                    staleElement = true;
+                    continue;
+
+                }
             }
-            FootballScoresMoreButton.Click();
+            
 
             staleElement = true;
             while (staleElement)
@@ -54,6 +63,12 @@ namespace BbcTestProject.PageObjects
                     continue;
 
                 }
+                catch(ElementNotInteractableException)
+                {
+                    staleElement = true;
+                    continue;
+
+                }
             }
             
             staleElement = true;
@@ -64,15 +79,22 @@ namespace BbcTestProject.PageObjects
                 {
                     ViewAllButton = driver.FindElement(By.XPath("//div[2]//div[2]/div[2]/a"));
                     staleElement = false;
-                    
+                    ViewAllButton.Click();
+
                 }
                 catch (StaleElementReferenceException)
                 {
                     staleElement = true;
                     continue;
                 }
+                catch (ElementNotInteractableException)
+                {
+                    staleElement = true;
+                    continue;
+
+                }
             }
-            ViewAllButton.Click();
+           
             return new BbcSportAllScoresPage(driver);
         }
     }

@@ -25,8 +25,8 @@ namespace BBCTestProject
         private string text;
         private List<string> SecondaryNewsCorrectTitles;
         private string TextSearched;
-        List<string[]> expectedMatchesResults;
-        List<string[]> actualMatchesResults;
+        List<Tuple<string,string>> expectedMatchesResults;
+        List<Tuple<string, string>> actualMatchesResults;
 
     [BeforeScenario]
         public void SetupDrivers()
@@ -177,13 +177,13 @@ namespace BBCTestProject
         public void WhenUserClicksOnTheMatchesLinkInSeries()
         {
             expectedMatchesResults = allScoresPage.GetMatchesResults();
-            actualMatchesResults = new List<string[]>();
+            actualMatchesResults = new List<Tuple<string, string>>();
             IList<IWebElement> links = allScoresPage.GetMatchesLinks();
             for (int i=0; i< allScoresPage.MatchResultsLinks.Count; i++)
             {             
                 links[i].Click();
                 driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-                actualMatchesResults[i] = allScoresPage.GetSelectedMatchResult();
+                actualMatchesResults.Add(allScoresPage.GetSelectedMatchResult());
                 driver.Navigate().Back();
             }
         }
@@ -193,8 +193,8 @@ namespace BBCTestProject
         {
             for(int i=0; i < allScoresPage.MatchResultsLinks.Count; i++)
             {
-                Assert.AreEqual(expectedMatchesResults[i][0], actualMatchesResults[i][0]);
-                Assert.AreEqual(expectedMatchesResults[i][1], actualMatchesResults[i][1]);
+                Assert.AreEqual(expectedMatchesResults[i].Item1, actualMatchesResults[i].Item1);
+                Assert.AreEqual(expectedMatchesResults[i].Item2, actualMatchesResults[i].Item2);
             }
         }
 

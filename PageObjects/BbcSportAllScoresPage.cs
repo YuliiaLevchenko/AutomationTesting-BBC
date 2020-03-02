@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using OpenQA.Selenium;
 using SeleniumExtras.PageObjects;
+using BbcTestProject.Utils;
 
 namespace BbcTestProject.PageObjects
 {
@@ -23,6 +24,7 @@ namespace BbcTestProject.PageObjects
 
         private void DisplayCurrentMonthMatches()
         {
+            Utils.Utils.WaitForJqueryAjax(driver);
             bool staleElement = true;
             while (staleElement)
             {
@@ -38,18 +40,25 @@ namespace BbcTestProject.PageObjects
                     staleElement = true;
                     continue;
                 }
+                catch (ElementNotInteractableException)
+                {
+                    staleElement = true;
+                    continue;
+
+                }
             }
             CurrentMonthResultButton.Click();
         }
 
         private List<string> GetMatchResultsLeftTeamScore()
         {
+            Utils.Utils.WaitForJqueryAjax(driver);
             bool staleElement = true;
             while (staleElement)
             {
                 try
                 {
-                    MatchResultsLeftTeamScore = driver.FindElements(By.CssSelector("div.sp-c-date-picker-timeline__group:nth-child(2) ul li:first-child a"));
+                    MatchResultsLeftTeamScore = driver.FindElements(By.CssSelector("div.qa-match-block ul li a article div>span:nth-child(1)>span:nth-child(2)"));
                     staleElement = false;
 
                 }
@@ -57,6 +66,12 @@ namespace BbcTestProject.PageObjects
                 {
                     staleElement = true;
                     continue;
+                }
+                catch (ElementNotInteractableException)
+                {
+                    staleElement = true;
+                    continue;
+
                 }
             }
             List<string> LeftTeamScoreText= new List<string>(MatchResultsLeftTeamScore.Count);
@@ -70,6 +85,7 @@ namespace BbcTestProject.PageObjects
 
         private List<string> GetMatchResultsRightTeamScore()
         {
+            Utils.Utils.WaitForJqueryAjax(driver);
             bool staleElement = true;
             while (staleElement)
             {
@@ -84,6 +100,12 @@ namespace BbcTestProject.PageObjects
                     staleElement = true;
                     continue;
                 }
+                catch (ElementNotInteractableException)
+                {
+                    staleElement = true;
+                    continue;
+
+                }
             }
             List<string> RightTeamScoreText = new List<string>(MatchResultsRightTeamScore.Count);
             for (int i = 0; i < MatchResultsRightTeamScore.Count; i++)
@@ -93,26 +115,24 @@ namespace BbcTestProject.PageObjects
             return RightTeamScoreText;
         }
 
-        //List<Results> Class Results
-        //попробывать создавать элемент ближе к месту, где это необходимо
-        public List<string[]> GetMatchesResults()
+        public List<Tuple<string, string>> GetMatchesResults()
         {
             DisplayCurrentMonthMatches();
             List<string> leftTeam = new List<string>();
             List<string> rightTeam = new List<string>();            
             leftTeam = GetMatchResultsLeftTeamScore();
             rightTeam = GetMatchResultsRightTeamScore();
-            List<string[]> totalResults = new List<string[]>(rightTeam.Count);
+            List<Tuple<string,string>> totalResults = new List<Tuple<string, string>>(rightTeam.Count);
             for(int i=0;i< rightTeam.Count; i++)
             {
-                totalResults[i][0] = leftTeam[i];
-                totalResults[i][1] = rightTeam[i];
+                totalResults.Add(new Tuple<string, string>(leftTeam[i], rightTeam[i]));
             }
             return totalResults;
         }
 
         public IList<IWebElement> GetMatchesLinks()
         {
+            Utils.Utils.WaitForJqueryAjax(driver);
             bool staleElement = true;
             while (staleElement)
             {
@@ -127,16 +147,22 @@ namespace BbcTestProject.PageObjects
                     staleElement = true;
                     continue;
                 }
+                catch (ElementNotInteractableException)
+                {
+                    staleElement = true;
+                    continue;
+
+                }
             }
             return MatchResultsLinks;
         }
 
         
-        public string[] GetSelectedMatchResult()
+        public Tuple<string, string> GetSelectedMatchResult()
         {
-            string[] result = new string[2];
-            string leftMatch;
-            string rightMatch;
+            Utils.Utils.WaitForJqueryAjax(driver);
+            string leftMatch = string.Empty;
+            string rightMatch = string.Empty;
             bool staleElement = true;
             while (staleElement)
             {
@@ -144,15 +170,20 @@ namespace BbcTestProject.PageObjects
                 {
                     leftMatch = driver.FindElement(By.CssSelector("section.fixture--live-session-header div.fixture__wrapper>span:first-child>span:last-child span")).Text;
                     staleElement = false;
-                    result[0] = leftMatch;
-
                 }
                 catch (StaleElementReferenceException)
                 {
                     staleElement = true;
                     continue;
                 }
+                catch (ElementNotInteractableException)
+                {
+                    staleElement = true;
+                    continue;
+
+                }
             }
+            staleElement = true;
 
             while (staleElement)
             {
@@ -160,15 +191,20 @@ namespace BbcTestProject.PageObjects
                 {
                     rightMatch = driver.FindElement(By.CssSelector("section.fixture--live-session-header div.fixture__wrapper span.fixture__team:nth-of-type(2)>span:nth-child(2) span")).Text;
                     staleElement = false;
-                    result[1] = rightMatch;
                 }
                 catch (StaleElementReferenceException)
                 {
                     staleElement = true;
                     continue;
                 }
+                catch (ElementNotInteractableException)
+                {
+                    staleElement = true;
+                    continue;
+
+                }
             }         
-            return result;
+            return new Tuple<string, string>(leftMatch,rightMatch);
         }
     }
 }

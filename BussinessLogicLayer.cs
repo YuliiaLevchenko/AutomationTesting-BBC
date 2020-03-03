@@ -16,12 +16,15 @@ namespace BBCTestProject
     {
         private IWebDriver driver;
         private Dictionary<string, string> fields;
+        private Dictionary<string, string> shareNewsFields;
         BbcHomePage home;
         BbcNewsPage news;
         BbcSportPage sport;
         BbcSportAllScoresPage allScoresPage;
         BbcHaveYouSayPage haveYouSay;
         BbcQuestionsPage question;
+        BbcShareNewsPage shareNews;
+        private string shareNewsUrl;
         private string text;
         private List<string> SecondaryNewsCorrectTitles;
         private string TextSearched;
@@ -44,7 +47,7 @@ namespace BBCTestProject
                 {"Email address", "aaa@ukr.net"},
                 {"Age", "20" },
                 {"Postcode", "1234" },
-                {"Question", "Why everything is about coronavirus?" }
+                {"Text", "Why everything is about coronavirus?" }
             };
 
             fields.Remove(fieldName);
@@ -90,7 +93,7 @@ namespace BBCTestProject
         [When(@"User fills textarea with generated text")]
         public void WhenUserFillsTextareaWithGeneratedText()
         {
-            question.form.GetTextArea().SendKeys(text);
+            question.form.TextArea.SendKeys(text);
         }
 
         [Then(@"An indicator of number of letters under the textarea displays '(.*)'")]
@@ -99,6 +102,58 @@ namespace BBCTestProject
             string actualResult = question.form.TextAreaNumberOfSymbolsText();
             Assert.AreEqual(indicator, actualResult);
         }
+
+
+        [Given(@"User generates text for all input fields in News Share form but (.*)")]
+        public Dictionary<string, string> GivenUserGeneratesTextForAllInputFieldsInNewsShareFormBut(string fieldName)
+        {
+            shareNewsFields = new Dictionary<string, string>()
+            {
+                {"fullName", "Julie" },
+                {"email", "aaa@ukr.net"},
+                {"town", "20" },
+                {"phone", "1234" },
+                {"Text", "Test News: in case you receive it, I am sorry" }
+            };
+
+            shareNewsFields.Remove(fieldName);
+            return shareNewsFields;
+        }
+
+        [When(@"User navigates to BBC Share News Page")]
+        public void WhenUserNavigatesToBBCShareNewsPage()
+        {
+            home = new BbcHomePage(driver);
+            home.GoToPage();
+            news = home.GoToNewsPage();
+            haveYouSay = news.GoToHaveYouSayPage();
+            shareNews = haveYouSay.GoToShareNewsPage();
+            shareNewsUrl = driver.Url;
+        }
+
+        [When(@"User fills in share news form without (.*)")]
+        public void WhenUserFillsInShareNewsFormWithout()
+        {
+            shareNews.form.FillForm(shareNewsFields);
+        }
+
+        [When(@"User clicks on Send button")]
+        public void WhenUserClicksOnSendButton()
+        {
+            shareNews.form.SubmitClick();
+        }
+
+        [Then(@"User stays on the same page")]
+        public void ThenUserStaysOnTheSamePage()
+        {
+            string currentURL = driver.Url;
+            Assert.AreEqual(shareNewsUrl, currentURL);
+        }
+
+
+
+
+
 
 
         [When(@"User navigates to BBC News Page")]
@@ -151,11 +206,12 @@ namespace BBCTestProject
             news.SearchValue(TextSearched);
         }
 
-        [Then(@"the first article name equals main News category name")]
+        [Then(@"the first article name contains main News category name")]
         public void ThenTheFirstArticleNameShouldEqualMainNewsCategoryName()
-        {
+        {          
             string actual = driver.FindElement(By.CssSelector("ol:first-child li:first-child article div h1[itemprop='headline'] a")).Text;
-            Assert.AreEqual(TextSearched, actual);
+            bool cont = actual.Contains(TextSearched);
+            Assert.IsTrue(cont);
         }
 
 

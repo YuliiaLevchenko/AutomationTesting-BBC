@@ -12,7 +12,7 @@ namespace BbcTestProject.PageObjects
             : base(driver) { }
 
         [FindsBy(How = How.TagName, Using = "textarea")]
-        private IWebElement Textarea { get; set; }
+        public IWebElement TextArea { get; private set; }
 
         [FindsBy(How = How.CssSelector, Using = ".embed-content-container input")]
         private IList<IWebElement> ContactInfoFields { get; set; }
@@ -25,6 +25,8 @@ namespace BbcTestProject.PageObjects
 
         [FindsBy(How = How.CssSelector, Using = "div.input-threeup-leading div.input-error-message")]
         private IList<IWebElement> InputErrors { get; set; }
+
+
 
         public string TextAreaNumberOfSymbolsText()
         {
@@ -46,10 +48,10 @@ namespace BbcTestProject.PageObjects
             foreach (var pair in values)
             {
 
-                if (pair.Key == "Question")
+                if (pair.Key == "Text")
                 {
-                    Textarea.Clear();
-                    Textarea.SendKeys(pair.Value);
+                    TextArea.Clear();
+                    TextArea.SendKeys(pair.Value);
                 }
 
                 foreach (IWebElement input in ContactInfoFields)
@@ -66,7 +68,7 @@ namespace BbcTestProject.PageObjects
 
         public IWebElement GetTextArea()
         {
-            return Textarea;
+            return TextArea;
         }
         public void SubmitClick()
         {

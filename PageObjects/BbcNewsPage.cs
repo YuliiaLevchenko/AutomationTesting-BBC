@@ -43,7 +43,6 @@ namespace BbcTestProject.PageObjects
             MoreButton.Click();
             for (int i = 0; i < MoreSectionLinks.Count; i++)
             {
-                //string.Format(LinkWithText, my text)
                 if (MoreSectionLinksTitles[i].Text == "Have Your Say")
                 {
                     MoreSectionLinks[i].Click();

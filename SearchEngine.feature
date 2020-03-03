@@ -6,4 +6,4 @@ Scenario: User inputs main news category in the search box
 	When User navigates to BBC News Page
 	And User considers main News category as input for search box
 	And User searches for input through search box
-	Then the first article name equals main News category name
+	Then the first article name contains main News category name

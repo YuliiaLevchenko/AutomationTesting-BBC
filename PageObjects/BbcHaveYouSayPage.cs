@@ -34,5 +34,12 @@ namespace BbcTestProject.PageObjects
             FindGetInTouchLink("Do you have a question for BBC News?");
             return new BbcQuestionsPage(driver);
         }
+
+        public BbcShareNewsPage GoToShareNewsPage()
+        {
+            FindGetInTouchLink("How to share with BBC News");
+            return new BbcShareNewsPage(driver);
+        }
+
     }
 }
